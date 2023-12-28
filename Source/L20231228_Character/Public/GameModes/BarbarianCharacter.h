@@ -41,6 +41,14 @@ private:
 	TObjectPtr<UCameraComponent> FollowCamera;
 
 private:
+	// Movement
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Movement, meta = (AllowPrivateAccess = "true"))
+	float WalkSpeed;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Movement, meta = (AllowPrivateAccess = "true"))
+	float RunSpeed;
+
+private:
 	// Input Actions
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Input, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UInputAction> MoveAction;
@@ -51,6 +59,9 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Input, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UInputAction> LookAction;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Input, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UInputAction> RunAction;
+
 private:
 	// Action Binding Function
 	void MoveActionTriggered(const FInputActionValue& Value);
@@ -60,4 +71,8 @@ private:
 	void JumpActionCompleted(const FInputActionValue& Value);
 
 	void LookActionTriggered(const FInputActionValue& Value);
+
+	void RunActionStarted(const FInputActionValue& Value);
+	
+	void RunActionCompleted(const FInputActionValue& Value);
 };

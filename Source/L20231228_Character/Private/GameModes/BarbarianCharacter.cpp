@@ -6,9 +6,10 @@
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "EnhancedInputComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 // Sets default values
-ABarbarianCharacter::ABarbarianCharacter()
+ABarbarianCharacter::ABarbarianCharacter() : WalkSpeed(300.0f), RunSpeed(600.0f)
 {
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -20,6 +21,9 @@ ABarbarianCharacter::ABarbarianCharacter()
 	// Set camera
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
 	FollowCamera->SetupAttachment(CameraBoom);
+
+	// Set movement
+	GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
 }
 
 // Called when the game starts or when spawned
@@ -56,6 +60,11 @@ void ABarbarianCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInput
 	if (!IsValid(LookAction)) return; // TODO Debug log
 	EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this,
 	                                   &ABarbarianCharacter::LookActionTriggered);
+
+	if (!IsValid(RunAction)) return; // TODO Debug log
+	EnhancedInputComponent->BindAction(RunAction, ETriggerEvent::Started, this, &ABarbarianCharacter::RunActionStarted);
+	EnhancedInputComponent->BindAction(RunAction, ETriggerEvent::Completed, this,
+	                                   &ABarbarianCharacter::RunActionCompleted);
 }
 
 void ABarbarianCharacter::MoveActionTriggered(const FInputActionValue& Value)
@@ -81,5 +90,15 @@ void ABarbarianCharacter::LookActionTriggered(const FInputActionValue& Value)
 	FVector2d Vector2dValue = Value.Get<FVector2d>();
 	AddControllerYawInput(Vector2dValue.X);
 	AddControllerPitchInput(Vector2dValue.Y);
+}
+
+void ABarbarianCharacter::RunActionStarted(const FInputActionValue& Value)
+{
+	GetCharacterMovement()->MaxWalkSpeed = RunSpeed;
+}
+
+void ABarbarianCharacter::RunActionCompleted(const FInputActionValue& Value)
+{
+	GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
 }
 
