@@ -7,6 +7,7 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "EnhancedInputComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Kismet/KismetMathLibrary.h"
 
 // Sets default values
 ABarbarianCharacter::ABarbarianCharacter() : WalkSpeed(300.0f), RunSpeed(600.0f)
@@ -70,8 +71,14 @@ void ABarbarianCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInput
 void ABarbarianCharacter::MoveActionTriggered(const FInputActionValue& Value)
 {
 	FVector2d Vector2dValue = Value.Get<FVector2d>();
-	AddMovementInput(GetActorForwardVector(), Vector2dValue.Y);
-	AddMovementInput(GetActorRightVector(), Vector2dValue.X);
+	FRotator CameraRotation = GetControlRotation();
+	FRotator DirectionRotation = FRotator(0, CameraRotation.Yaw, 0);
+
+	FVector ForwardVector = UKismetMathLibrary::GetForwardVector(DirectionRotation);
+	FVector RightVector = UKismetMathLibrary::GetRightVector(DirectionRotation);
+	
+	AddMovementInput(ForwardVector, Vector2dValue.Y);
+	AddMovementInput(RightVector, Vector2dValue.X);
 }
 
 void ABarbarianCharacter::JumpActionStarted(const FInputActionValue& Value)
